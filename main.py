@@ -1,6 +1,9 @@
 from discord.ext import commands
 from discord.utils import get
 from discord import FFmpegPCMAudio
+from discord.ext.commands.errors import CommandInvokeError
+
+import asyncio
 
 bot = commands.Bot(command_prefix="-")
 
@@ -28,11 +31,6 @@ async def samba(ctx):
 
 @bot.command(description="In the name of God", pass_context=True)
 async def crusade(ctx):
-    def unlock():
-        nonlocal lock
-        lock = False
-
-    lock = True
     channel = ctx.message.mentions[0].voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
 
@@ -41,14 +39,16 @@ async def crusade(ctx):
     else:
         voice = await channel.connect()
 
-    voice.play(FFmpegPCMAudio('crusade.mp3'), after=unlock())
-    await ctx.send("We'll take the Jerusalem")
+    voice.play(FFmpegPCMAudio('crusade.mp3'))
+    await ctx.send("We'll take Jerusalem")
 
-    print(lock)
-    while lock:
-        print("fdvfsda")
-        if channel != ctx.message.mentions[0].voice.channel:
-            print("afdvbdfgfd")
+    for i in range(1000):
+        await asyncio.sleep(1)
+        try:
+            if channel != ctx.message.mentions[0].voice.channel:
+                channel = ctx.message.mentions[0].voice.channel
+                await voice.move_to(channel)
+        except AttributeError as ex:
+            print(type(ex))
 
-
-bot.run('NTczNDYwMDkyNzY3MTc0NjU4.XMrLXA.wC9mxCltb0gtT2xLO0nSRObvGRQ')
+bot.run('NTc1NzU1NTIzNzYxMTExMDg2.XNMkIg.WdMcJFQTK8wniCyyuFWcXUtfJNY')
